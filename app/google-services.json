@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "230308642579",
+    "firebase_url": "https://greenthumb-a2f75.firebaseio.com",
+    "project_id": "greenthumb-a2f75",
+    "storage_bucket": "greenthumb-a2f75.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230308642579:android:5990adf21d37b3b369a4e6",
+        "android_client_info": {
+          "package_name": "com.chrissetiana.greenthumb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230308642579-i9ifhoa4i3ts4hq9fa6flh4bp1me5gqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxDkYHWQ1q1XrRgG7osHeNQxtdEmBll_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230308642579-i9ifhoa4i3ts4hq9fa6flh4bp1me5gqq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
