@@ -15,7 +15,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.google.firebase.udacity.greenthumb.MainActivity">
+    android:fitsSystemWindows="true"
+    tools:context="com.google.firebase.udacity.greenthumb.PlantDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -24,9 +25,7 @@
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:statusBarScrim="@color/colorPrimaryDark">
+            android:layout_height="match_parent">
 
 
             <android.support.v7.widget.Toolbar
@@ -41,6 +40,34 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/detail_container_margin"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/text_view_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Card Content" />
+
+        <TextView
+            android:id="@+id/text_view_item_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/detail_item_padding"
+            tools:text="Credits: 10" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_add_shopping_cart_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -11,7 +11,16 @@
      limitations under the License.
 -->
 <resources>
-    <color name="colorPrimary">#4CAF50</color>
-    <color name="colorPrimaryDark">#388E3C</color>
-    <color name="colorAccent">#795548</color>
+    <!-- Plant prices in credits -->
+    <integer-array name="plant_prices">
+        <item name="price_fennel">20</item>
+        <item name="price_asparagus">35</item>
+        <item name="price_carrot">20</item>
+        <item name="price_cucumber">40</item>
+        <item name="price_potato">30</item>
+        <item name="price_mint">65</item>
+        <item name="price_beet">40</item>
+        <item name="price_bok_choy">25</item>
+        <item name="price_snap_peas">50</item>
+    </integer-array>
 </resources>
