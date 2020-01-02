@@ -1,7 +1,10 @@
 package com.chrissetiana.greenthumb;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,9 +15,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,7 +72,7 @@ public class ShoppingCartActivity extends AppCompatActivity
         mButtonCheckout = findViewById(R.id.button_cart_checkout);
         mButtonCheckout.setOnClickListener(this);
 
-        getSupportLoaderManager().initLoader(SHOPPING_CART_LOADER, null, this);
+        getLoaderManager().initLoader(SHOPPING_CART_LOADER, null, this);
 
         Analytics.logEventBeginCheckout(this);
     }

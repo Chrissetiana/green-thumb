@@ -1,7 +1,10 @@
 package com.chrissetiana.greenthumb;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -11,9 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 
 import com.chrissetiana.greenthumb.data.DbContract.PlantEntry;
 import com.chrissetiana.greenthumb.data.Plant;
@@ -25,8 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
  * {@link PlantDetailActivity} displays a plant's name and description
  * and allows the user to check out the plant to the shopping cart.
  */
-public class PlantDetailActivity extends AppCompatActivity
-        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class PlantDetailActivity extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String INTENT_EXTRA_ITEM = "item_id";
     private static final int PLANT_DETAIL_LOADER = 2;
@@ -66,7 +65,7 @@ public class PlantDetailActivity extends AppCompatActivity
 
         mItemId = getIntent().getIntExtra(INTENT_EXTRA_ITEM, 0);
 
-        getSupportLoaderManager().initLoader(PLANT_DETAIL_LOADER, null, this);
+        getLoaderManager().initLoader(PLANT_DETAIL_LOADER, null, this);
     }
 
 

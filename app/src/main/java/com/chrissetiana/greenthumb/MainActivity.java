@@ -1,6 +1,9 @@
 package com.chrissetiana.greenthumb;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,9 +12,6 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                layoutManager.getOrientation());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         recyclerView.setAdapter(mAdapter);
 
         // Kick off the loader
-        getSupportLoaderManager().initLoader(PLANT_LOADER, null, this);
+        getLoaderManager().initLoader(PLANT_LOADER, null, this);
     }
 
     @Override
@@ -117,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             return;
                         }
                         Preferences.setGardeningExperience(MainActivity.this, mRatingChoice);
+
+                        Analytics.setUserPropertyGardeningExperience(MainActivity.this, mRatingChoice);
                     }
                 })
                 .setNegativeButton(R.string.button_gardening_experience_cancel, new DialogInterface.OnClickListener() {

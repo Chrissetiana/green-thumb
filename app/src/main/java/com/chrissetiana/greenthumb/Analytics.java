@@ -19,6 +19,7 @@ public class Analytics {
         params.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "plants");
         params.putDouble(FirebaseAnalytics.Param.QUANTITY, quantity);
         params.putDouble(FirebaseAnalytics.Param.PRICE, plant.price);
+
         FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.ADD_TO_CART, params);
     }
 
@@ -27,6 +28,7 @@ public class Analytics {
 
         params.putInt(FirebaseAnalytics.Param.ITEM_ID, plant.id);
         params.putString(FirebaseAnalytics.Param.ITEM_NAME, plant.name);
+
         FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.VIEW_ITEM, params);
     }
 
@@ -38,4 +40,10 @@ public class Analytics {
         FirebaseAnalytics.getInstance(context).logEvent(FirebaseAnalytics.Event.ECOMMERCE_PURCHASE, null);
     }
 
+    public static void setUserPropertyGardeningExperience(Context context, int experienceIndex) {
+        String userPropertyKey = context.getString(R.string.user_property_key_gardening_experience);
+        String[] userPropertyValues = context.getResources().getStringArray(R.array.user_propety_values_gardening_experience);
+
+        FirebaseAnalytics.getInstance(context).setUserProperty(userPropertyKey, userPropertyValues[experienceIndex]);
+    }
 }

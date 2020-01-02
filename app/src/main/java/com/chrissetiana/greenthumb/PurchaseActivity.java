@@ -47,14 +47,13 @@ public class PurchaseActivity extends AppCompatActivity implements LoaderManager
         mTextViewPurchaseEmpty = findViewById(R.id.text_view_empty_purchase);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
-                layoutManager.getOrientation());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), layoutManager.getOrientation());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(dividerItemDecoration);
         mPurchaseAdapter = new PurchaseAdapter();
         mRecyclerView.setAdapter(mPurchaseAdapter);
 
-        getSupportLoaderManager().initLoader(PURCHASE_LOADER, null, (androidx.loader.app.LoaderManager.LoaderCallbacks<Object>) this);
+        getLoaderManager().initLoader(PURCHASE_LOADER, null, this);
     }
 
     @Override
