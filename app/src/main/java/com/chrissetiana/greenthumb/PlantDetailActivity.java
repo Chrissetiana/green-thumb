@@ -6,10 +6,13 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +21,12 @@ import androidx.appcompat.widget.Toolbar;
 import com.chrissetiana.greenthumb.data.DbContract.PlantEntry;
 import com.chrissetiana.greenthumb.data.Plant;
 import com.chrissetiana.greenthumb.data.PlantCartHelper;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitationResult;
+import com.google.android.gms.appinvite.AppInviteReferral;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -25,7 +34,11 @@ import com.google.android.material.snackbar.Snackbar;
  * {@link PlantDetailActivity} displays a plant's name and description
  * and allows the user to check out the plant to the shopping cart.
  */
-public class PlantDetailActivity extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class PlantDetailActivity extends AppCompatActivity implements
+        View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "PlantDetailActivity";
 
     private static final String INTENT_EXTRA_ITEM = "item_id";
     private static final int PLANT_DETAIL_LOADER = 2;
@@ -38,6 +51,8 @@ public class PlantDetailActivity extends AppCompatActivity implements View.OnCli
     private Toolbar mToolbar;
     private TextView mItemDescription;
     private TextView mItemPrice;
+
+    private GoogleApiClient mGoogleApiClient;
 
     public static void startActivity(Context context, int itemPosition) {
         Intent i = new Intent(context, PlantDetailActivity.class);
@@ -58,14 +73,51 @@ public class PlantDetailActivity extends AppCompatActivity implements View.OnCli
 
         setSupportActionBar(mToolbar);
         ActionBar supportActionBar = getSupportActionBar();
+
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
+
         fab.setOnClickListener(this);
 
         mItemId = getIntent().getIntExtra(INTENT_EXTRA_ITEM, 0);
 
         getLoaderManager().initLoader(PLANT_DETAIL_LOADER, null, this);
+
+        // Build GoogleApiClient with AppInvite API for receiving deep links
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(AppInvite.API)
+                .build();
+
+        handleDynamicLink();
+    }
+
+    private void handleDynamicLink() {
+        // Check if this app was launched fron a deep link. Setting autoLaunchDeepLink to true
+        // would automatically launch the deep link if one is found.
+        boolean autoLaunchDeepLink = false;
+
+        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                .setResultCallback(new ResultCallback<AppInviteInvitationResult>() {
+                    @Override
+                    public void onResult(@NonNull AppInviteInvitationResult result) {
+                        if (result.getStatus().isSuccess()) {
+                            // Extract deep link from Intent
+                            Intent intent = result.getInvitationIntent();
+                            String deepLink = AppInviteReferral.getDeepLink(intent);
+
+                            // Handle the deep link. For example, open the linked
+                            // content, or apply promotional credit to the user's account
+                            Uri uri = Uri.parse(deepLink);
+                            String plantId = uri.getLastPathSegment();
+                            mItemId = Integer.parseInt(plantId);
+                            getLoaderManager().restartLoader(PLANT_DETAIL_LOADER, null, PlantDetailActivity.this);
+                        } else {
+                            Log.d(TAG, "getInvitation: no deep link found.");
+                        }
+                    }
+                });
     }
 
 
@@ -119,5 +171,10 @@ public class PlantDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mCursor = null;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "GoogleApiClient connection failed: " + connectionResult.getErrorMessage());
     }
 }

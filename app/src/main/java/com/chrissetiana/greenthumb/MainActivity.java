@@ -4,8 +4,10 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chrissetiana.greenthumb.data.DbContract.PlantEntry;
 import com.chrissetiana.greenthumb.data.Preferences;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitationResult;
+import com.google.android.gms.appinvite.AppInviteReferral;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.crash.FirebaseCrash;
@@ -33,17 +41,19 @@ import java.util.Map;
 /**
  * {@link MainActivity} displays a list of plants to buy.
  */
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "MainActivity";
 
     private static final int PLANT_LOADER = 1;
-
-    PlantAdapter mAdapter;
-
-    private int mRatingChoice = -1;
-
     private static final String PLANT_DESCRIPTIONS_KEY = "plant_descriptions";
     private static final String DEFAULT_PLANT_DESCRIPTIONS_LEVEL = "basic";
+    PlantAdapter mAdapter;
     FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private int mRatingChoice = -1;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
 
         fetchConfig();
+
+        // Build GoogleApiClient with AppInvite API for receiving deep links
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(AppInvite.API)
+                .build();
+
+        handleDynamicLink();
     }
 
     private void reportFatalError() {
@@ -130,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void applyRetrievedPlantDescriptionsLevel() {
         String plantDescriptionsLevel = mFirebaseRemoteConfig.getString(PLANT_DESCRIPTIONS_KEY);
-        Log.d("MainActivity", "plant_descriptions = " + plantDescriptionsLevel);
+        Log.d(TAG, "plant_descriptions = " + plantDescriptionsLevel);
 
         String[] plantDescriptions;
 
@@ -151,6 +169,32 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     new String[]{String.valueOf(plantId)}
             );
         }
+    }
+
+    private void handleDynamicLink() {
+        // Check if this app was launched from a deep link. Setting autoLaunchDeepLink to true
+        // would automatically launch the deep link if one is found
+        boolean autoLaunchDeepLink = false;
+
+        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                .setResultCallback(new ResultCallback<AppInviteInvitationResult>() {
+                    @Override
+                    public void onResult(@NonNull AppInviteInvitationResult result) {
+                        if (result.getStatus().isSuccess()) {
+                            // Extract deep link from Intent
+                            Intent intent = result.getInvitationIntent();
+                            String deepLink = AppInviteReferral.getDeepLink(intent);
+
+                            // Handle the deep link. For example, open the linked
+                            // content, or apply promotional credit to the user's account.
+                            Uri uri = Uri.parse(deepLink);
+                            int plantId = Integer.parseInt(uri.getLastPathSegment());
+                            PlantDetailActivity.startActivity(MainActivity.this, plantId);
+                        } else {
+                            Log.d(TAG, "getInvitationL no deep link found");
+                        }
+                    }
+                });
     }
 
     @Override
@@ -254,5 +298,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "GoogleAPIClient connection failed: " + connectionResult.getErrorMessage());
     }
 }
