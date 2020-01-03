@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chrissetiana.greenthumb.data.DbContract.PlantEntry;
 import com.chrissetiana.greenthumb.data.Preferences;
+import com.google.firebase.crash.FirebaseCrash;
 
 /**
  * {@link MainActivity} displays a list of plants to buy.
@@ -50,6 +51,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Kick off the loader
         getLoaderManager().initLoader(PLANT_LOADER, null, this);
+
+        reportFatalError();
+
+        reportNonFatalError();
+    }
+
+    private void reportFatalError() {
+//        throw new NullPointerException();
+        throw new RuntimeException("Reporting Firebase FATAL error");
+    }
+
+    private void reportNonFatalError() {
+        FirebaseCrash.report(new Exception("Reporting Firebase NON-FATAL error"));
     }
 
     @Override
