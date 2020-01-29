@@ -31,7 +31,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -106,11 +105,14 @@ public class MainActivity extends AppCompatActivity implements
 
     private void reportFatalError() {
 //        throw new NullPointerException();
-        throw new RuntimeException("Reporting Firebase FATAL error");
+//        throw new RuntimeException("Reporting Firebase FATAL error");
+//        FirebaseCrash.report(new Exception("Reporting Firebase FATAL error"));
+        Log.e(TAG, "Reporting Firebase FATAL error");
     }
 
     private void reportNonFatalError() {
-        FirebaseCrash.report(new Exception("Reporting Firebase NON-FATAL error"));
+//        FirebaseCrash.report(new Exception("Reporting Firebase NON-FATAL error"));
+        Log.e(TAG, "Reporting Firebase NON-FATAL error");
     }
 
     private void fetchConfig() {
